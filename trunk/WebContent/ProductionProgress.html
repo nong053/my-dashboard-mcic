@@ -1,0 +1,143 @@
+<html>
+<head>
+    <style>
+   table.k-focusable{
+    position:absolute;
+    }
+   
+    #loading{
+        display: none;
+        position:absolute;
+        z-index:10000;
+    }
+    .k-grid-content{
+        overflow-y:hidden;
+    }
+    #selectDepartment{
+    	display:none;
+    }
+    .greenColor{
+    	color:#7cfc00;
+    }
+    .redColor{
+    	color:red;
+    }
+    #dialogBox{
+    	display:none;
+    }
+    #searchArea{
+    float:right;
+    padding:5px;
+    }
+    #jobload{
+    display:inline;
+    }
+    #jobComplete{
+    display:inline;
+    }
+   
+    </style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="css/ui-darkness/jquery-ui-1.8.23.custom.css"  type="text/css" rel="stylesheet">
+<link href="css/production_progress.css" type="text/css" rel="stylesheet" >
+<link href="kendo/styles/kendo.default.min.css" type="text/css" rel="stylesheet" >
+<link href="kendo/styles/kendo.black.min.css" type="text/css" rel="stylesheet" >
+
+<link href="kendo/styles/kendo.common.min.css" rel="stylesheet" type="text/css">
+<script src="js/jquery-1.8.0.min.js"></script>
+<script src="kendo/js/kendo.all.min.js"></script>
+<script src="js/jquery-ui-1.8.23.custom.min.js"></script>
+<script type="text/javascript" src="dev_js/production_progress.js"></script>
+
+<title>Production Progress</title>
+</head>
+<body>
+<div id="selectDepartment"></div>
+<div id="dialogBox" title="ผลการค้นหา">
+	<div id="searchGrid" style="height: 390px"></div>
+</div>
+
+<div id="loading">Loading....</div>
+<div id="body">
+	<div id="tabs">
+		<ul>
+			<li>
+				<a href="#content1">Production Progress</a>
+			</li>
+			
+		</ul>
+		<div id="content1">
+		<div id="plantArea" style="padding:5px;">
+
+			<b>PLANT</b> : <select name="plant" id="plant" class="listSelect">
+			
+			<option value=''>All-PLANT</option>
+			<!-- 
+			<option>PLANT2</option>
+			<option>PLANT3</option>
+			-->
+			</select>
+			<!-- from date area-->
+			<b>From</b> : <input type="text" id="from_date" name="from_date" class="date" value=''>
+			<!-- to date area -->
+			<b>To</b> : <input type="text" id="to_date" name="to_date" class="date" value=''>
+			<!-- department area -->
+			<b>Department</b> : <select name="department" id="department" class="listSelect">
+			<option value=''>All-Department</option>
+			<!-- 
+			<option>PLANT2</option>
+			<option>PLANT3</option>
+			-->
+			</select>
+			
+			<!-- search area -->
+			<!--  
+	        <b> Search: </b><input type="text" name="search1" id="search1"/>
+	        <input type="submit" id="submit1" name="submit1" value="ค้นหา"/>
+	        -->
+	        <button id="submit1">  OK </button>
+		</div>
+				<!-- Dash board Content-->
+				<div id="content">
+				
+				<!-- box-->
+					<div class="box">
+						<div class="head">
+							<div class="title">
+							
+							</div>
+                                                        <div class="percen-work-load">
+                                                        <div id="jobload">
+                                                         Work Load: <span id="jobLoadResult"></span> Jobs(<span id="jobLoadPercentage" class="redColor">--%</span>)
+                                                         </div>
+                                                         
+                                                         <div id="jobComplete">
+                                                         Work Complete: <span id="jobcompeleteResult"></span> Jobs(<span id="jobCompletePercentage" class="greenColor">--%</span>)
+                                                         </div>
+                                                        
+                                                        </div>
+						</div>
+						<div class="content">
+						<!-- table-->
+						   <div id="grid1" style="height: 600px"></div>
+						<!-- table-->
+							
+						</div>
+					</div>
+				<!-- box-->
+
+				</div>
+				<!-- content1-->
+				<!-- Dash board Content-->
+				<br style="clear:both">
+				
+			</div>
+			
+			
+				
+	</div>
+	
+</div>
+      
+</body>
+</html>

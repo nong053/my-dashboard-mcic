@@ -1,0 +1,23 @@
+#mainContent{
+width:1300px;
+
+}
+#mainContent #contentL{
+width:600px;
+height:500px;
+border:1px solid #cccccc;
+background:white;
+float:left;
+margin:1px;
+padding:5px;
+}
+#mainContent #contentR{
+background:white;
+width:620px;
+height:500px;
+border:1px solid #cccccc;
+float:left;
+margin:1px;
+padding:5px;
+
+}
