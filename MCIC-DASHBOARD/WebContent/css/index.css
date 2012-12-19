@@ -1,0 +1,65 @@
+body{
+margin:0px;
+padding:0px;
+background:black;
+font:Tahoma;
+font-size:13px;
+color:white;
+}
+#body{
+width:1300px;
+margin:auto;
+margin:left:auto;
+background:#dddddd;
+}
+#content{
+/*background:yellow;*/
+}
+#content .box{
+	width:610px;
+	height:350px;
+	float:left;
+	padding:5px;
+	background:white;
+	border:1px solid #dddddd;
+	border-radius:5px;
+	margin:2px;
+}
+#content .box .head{
+	/*background:black;*/
+    border-radius:5px;
+    background: url("../img/ui-bg_gloss-wave_25_333333_500x100.png") repeat-x scroll 50% 50% #F58400;
+    border: 1px solid #FFAF0F;
+    color: #FFFFFF;
+    font-weight: bold;
+    height:35px;
+   
+}
+#content .box .head .title{
+	
+	/*text-align:left;*/
+	font-weight:bold;
+	color:white;
+	font-size:15px;
+        float:left;
+        widht:200px;
+        padding:5px;
+        padding-top: 8px;
+        
+	
+}
+#content .box .head .percen-work-load{
+        float:right;
+        width:200px;
+        padding:5px;
+        padding-top: 8px;
+        
+}
+#content .box .content{
+border:#cccccc solid 1px;
+}
+.titletop{
+
+font-weight:bold;
+}
+

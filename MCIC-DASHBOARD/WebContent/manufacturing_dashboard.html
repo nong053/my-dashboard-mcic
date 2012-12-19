@@ -1,0 +1,746 @@
+<html>
+<head>
+    <style>
+   table.k-focusable{
+    position:absolute;
+    }
+   
+    #loading{
+        display: none;
+        position:absolute;
+        z-index:10000;
+        color:white;
+    }
+    .k-grid-content{
+        overflow-y:hidden;
+    }
+    #selectDepartment{
+    	display:none;
+    }
+    .greenColor{
+    	color:#7cfc00;
+    }
+    .redColor{
+    	color:red;
+    }
+    #dialogBox{
+    	display:none;
+    }
+    #searchArea{
+    float:right;
+    padding:5px;
+    }
+    #jobload{
+    display:inline;
+    }
+    #jobComplete{
+    display:inline;
+    }
+    .boxContent{
+    display:block;
+    width:120px;
+    float:left;
+    }
+    #planQty{
+    display:block;
+    width:55px;
+    margin:1px;
+    border:1px solid #dddddd;
+    height:19px;
+    }
+    .number{
+    text-align:right;
+    margin-right:2px;
+    }
+    #actaulQty{
+    display:block;
+    width:65px;
+    margin:1px;
+    border:1px solid #dddddd;
+    height:19px;
+    }
+   
+    </style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="css/ui-darkness/jquery-ui-1.8.23.custom.css"  type="text/css" rel="stylesheet">
+<link href="css/manufacturing_dashboard.css" type="text/css" rel="stylesheet" >
+<link href="kendo/styles/kendo.default.min.css" type="text/css" rel="stylesheet" >
+<link href="kendo/styles/kendo.black.min.css" type="text/css" rel="stylesheet" >
+<link href="kendo/styles/kendo.common.min.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="css/style.css" />
+        
+        
+        <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" />
+        <link rel="stylesheet" href="http://taitems.github.com/UX-Lab/core/css/prettify.css" />
+       
+       <!-- 
+		<style type="text/css">
+			body {
+				font-family: Helvetica, Arial, sans-serif;
+				font-size: 13px;
+				padding: 0 0 50px 0;
+			}
+			.contain {
+				width: 800px;
+				margin: 0 auto;
+			}
+			h1 {
+				margin: 40px 0 20px 0;
+			}
+			h2 {
+				font-size: 1.5em;
+				padding-bottom: 3px;
+				border-bottom: 1px solid #DDD;
+				margin-top: 50px;
+				margin-bottom: 25px;
+			}
+			table th:first-child {
+				width: 150px;
+			}
+		</style>
+		
+		 -->
+<script src="js/jquery-1.7.2.min.js"></script>		 
+<!-- <script src="js/jquery-1.8.0.min.js"></script>-->
+<script src="kendo/js/kendo.all.min.js"></script>
+<script src="js/jquery-ui-1.8.23.custom.min.js"></script>
+<script type="text/javascript" src="dev_js/manufacturing_dashboard.js"></script>
+
+	<script src="js/jquery.fn.gantt.js"></script>
+	<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
+	<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-popover.js"></script>
+	<script src="http://taitems.github.com/UX-Lab/core/js/prettify.js"></script>
+    <script>
+    
+    //function convert date to timestamp
+    //date:12-11-2012 20:16:01
+    //timestamp:1352726161000
+    
+    //date:13-11-2012 20:16:01
+    //timestamp:1352726161000
+    
+    //date:14-11-2012 20:16:01
+    //timestamp:1352898961000
+    
+    //date:15-11-2012 20:16:01
+    //timestamp:1352985361000
+    
+    //date:16-11-2012 20:16:01
+    //timestamp:1353071761000
+    
+    //date:17-11-2012 20:16:01
+    //timestamp:1353158161000
+    
+    //date:18-11-2012 20:16:01
+    //timestamp:1353244561000
+    
+    //date:18-12-2012 20:16:01
+    //timestamp:1355836561000
+    
+    
+    var myDate="14-11-2012 20:16:01";
+    myDate=myDate.split("-");
+    var newDate=myDate[1]+"/"+myDate[0]+"/"+myDate[2];
+    //alert(new Date(newDate).getTime());
+    
+   
+    $(document).ready(function(){
+    	$(".date").kendoDatePicker();
+    	var myDate=new Date;
+    	var year=myDate.getFullYear();
+    	var day =myDate.getDate();
+    	var month=myDate.getMonth();
+    	var currentMonthForm= (month+1)+"/01/"+year;
+    	var currentMonthTo= (month+1)+"/"+day+"/"+year;
+    	
+    	$("#from_date").val(currentMonthForm);
+    	$("#to_date").val(currentMonthTo);
+    	
+    	//$(".listSelect").kendoDropDownList();
+    	
+    });
+
+$(function() {
+	var objDataSourceGlobal="";
+			//"use strict";
+	var gantt=function(argDataSource,argScale){
+		var argScale =(typeof argScale==="undefined")?"days":argScale;
+		var argDataSource = (typeof argDataSource==="undefined")?"":argDataSource;
+		alert("argDataSource"+argDataSource);
+			$(".gantt").gantt({
+				source: argDataSource,
+				
+				navigate: "scroll",
+				/*
+				hours
+				days
+				weeks
+				months
+				*/
+				/*
+				scale: "days",
+				*/
+				maxScale: "months",
+				minScale: "days",
+				
+				scale: argScale,
+				//maxScale: "hours",
+				//minScale: "hours",
+				itemsPerPage: 16,
+				onItemClick: function(data) {
+					//alert("Item clicked - show some details");
+				},
+				onAddClick: function(dt, rowId) {
+					//alert("Empty space clicked - add an item!");
+				}
+			});
+			
+			$(".gantt").popover({
+				selector: ".bar",
+				title: "I'm a popover",
+				content: "And I'm the content of said popover."
+			});
+
+			prettyPrint();
+			
+			//defineHeader();
+			
+			
+	};//End gantt		
+	var defineHeader = function(){
+		var html="<table id='headerTable' width='100%'><tr><td width='200'><b>MACHINE</b></td><td width='100'><b>JOB</b></td><td width='100'><b>SUB JOB</b></td><td><b>PLAN QTY</b></td><td><b>ACTUAL QTY</b></td></tr></table>";
+		setTimeout(function(){
+			//alert($(".leftPanel div.spacer").length);
+			$(".leftPanel div.spacer").empty();
+			$(".leftPanel div.spacer").html(html);
+			
+			var heightTitle = $(".leftPanel>.spacer").attr("style").split(";");
+			var arHeightTitle=parseInt(heightTitle[0].substring("7"));
+			
+			$("#headerTable").css({"margin-top":""+(arHeightTitle-22)+"px","margin-left":"","font-size":"13px"});
+			//management table header
+		    $("table#headerTable tr").css({"border-top":"1px solid #cccccc","border-bottom":"1px solid #cccccc","background":"#dddddd"});
+		    $("table#headerTable tr td:eq(0)").css({"padding-left":"5px"});
+		    $("table#headerTable tr td").css({"padding":"5px"});
+		    
+		    
+		},1000);
+		
+	};
+
+			//manage manual
+	var detailGantt=function(){
+			
+			setTimeout(function(){
+		   
+		    
+		    $("#RowdId_1")
+		    .html("<table class='contentTable' width='100%'><tr><td width='120'>job3</td><td width='120'></td><td width='90'>100</td><td>80</td></tr></table>");
+		    $("#RowdId_2")
+		    .html("<table class='contentTable' width='100%'><tr><td width='120'>job4</td><td width='120'></td><td width='90'>100</td><td>90</td></tr></table>");
+		    
+		    $("#RowdId_4")
+		    .html("<table class='contentTable' width='100%'><tr><td width='120'>job1</td><td width='120'></td><td width='90'>100</td><td>90</td></tr></table>");
+		    $("#RowdId_5")
+		    .html("<table class='contentTable' width='100%'><tr><td width='120'></td><td width='120'>job11</td><td width='90'>100</td><td>90</td></tr></table>");
+		    $("#RowdId_6")
+		    .html("<table class='contentTable' width='100%'><tr><td width='120'></td><td width='120'>job12</td><td width='90'>100</td><td>90</td></tr></table>");
+		    $("#RowdId_7")
+		    .html("<table class='contentTable' width='100%'><tr><td width='120'>job2</td><td width='120'></td><td width='90'>100</td><td>90</td></tr></table>");
+		    $("#RowdId_8")
+		    .html("<table class='contentTable' width='100%'><tr><td width='120'></td><td width='120'>job21</td><td width='90'>100</td><td>90</td></tr></table>");
+		    $("#RowdId_9")
+		    .html("<table class='contentTable' width='100%'><tr><td width='120'></td><td width='120'>job22</td><td width='90'>100</td><td>90</td></tr></table>");
+		    
+		  //management table content
+		    $("table.contentTable").css({"font-family":"Tahoma","font-size":"13px"});
+		   
+			},1000);
+			
+	};//End detailGantt.
+	//function convest date time
+	function convertDate(argDate){
+		 var dateFormat = argDate.substring(0,19);
+		 var myDate=dateFormat;
+		 myDate=myDate.split("-");
+		 var arrayDayTime=myDate[2].split(" ");
+		 var $day=arrayDayTime[0];
+		 var $time=arrayDayTime[1];
+		
+		 var newDate=myDate[1]+"/"+$day+"/"+myDate[0]+" "+$time;
+		 //alert(newDate);
+		 //01/17/2013 00:00:00
+		 return new Date(newDate).getTime();
+		
+		}
+	
+	var callContentByAjax = function(arg_cate_machine,arg_from_date,arg_to_date,arg_year){
+		
+		var dataSource = "";
+		var objDataSource="";
+		var arg_cate_machine = (typeof arg_cate_machine==="undefined")?"":arg_cate_machine;
+		var arg_from_date = (typeof arg_from_date==="undefined")?"":arg_from_date;
+		var arg_to_date = (typeof arg_to_date==="undefined")?"":arg_to_date;
+		var arg_year = (typeof arg_year==="undefined")?"":arg_year;
+		
+		
+		//alert(arg_from_date);
+		//alert(arg_to_date);
+		//alert(arg_cate_machine);
+		
+	//Start ajax main
+	$.ajax({
+		url:'manufacturing_cate_job.jsp',
+		type:'get',
+		dataType:'json',
+		data:{'param_machine':arg_cate_machine},
+		cache:false,
+		success:function(data){
+			
+			var dateFrom="";
+			var dateTo="";
+			dataSource+="[";
+			var i=0;
+			var j=0;
+			var convertDMY=new Array();
+			var convertDMY2=new Array();
+			$.each(data,function(index1,indexIntry){
+				//alert(i);
+				//alert("cate_job"+indexIntry[0]);
+				if(i!=0){
+				dataSource+=",";
+				}
+				
+				$.ajax({
+					url:'scope_machine.jsp',
+					type:'get',
+					dataType:'json',
+					async:false,
+					data:{'machine_id':indexIntry[0],'paramFromDate':arg_from_date,'paramToDate':arg_to_date},
+					success:function(data){
+						 //alert("cate_scopt_date_from"+data[0][0]);
+						 //alert("cate_scopt_date_to"+data[0][1]);
+						 if(data[0][0]!=null && data[0][1]!=null){
+						 dateFrom =convertDate(data[0][0]);
+						 dateTo =convertDate(data[0][1]);
+						 
+						 dataSource+="{";
+							dataSource+="name:\""+indexIntry[1]+"\",";
+							//dataSource+="name:\"&nbsp;\",";
+							dataSource+="desc:\" &nbsp;\",";
+							dataSource+="values:[{";
+								dataSource+="from:\"/Date("+dateFrom+")/\",";
+								dataSource+="to:\"/Date("+dateTo+")/\",";
+								dataSource+="label:\""+indexIntry[0]+"\",";
+								dataSource+="customClass:\"ganttYellow\",";
+								dataSource+="}]";
+						dataSource+="}";
+						 
+						 }
+					}	
+				});
+
+				
+				i++;//num around category job
+				
+				
+			
+				
+				//Start ajax sub
+		
+				$.ajax({
+					url:'manufacturing_dashboard.jsp',
+					type:'get',
+					dataType:'json',
+					data:{'machine_id':indexIntry[0],'paramFromDate':arg_from_date,'paramToDate':arg_to_date,'paramYear':arg_year},
+					cache:false,
+					async:false,
+					success:function(data){
+					
+						if(data =="null" || data ==""){
+							console.log("data is empty");
+						}else{
+						
+						//ajax
+						//alert(data);
+						var subDateMonthYear="";
+						
+						$.each(data,function(intry2,indexIntry2){
+							subDateMonthYear = indexIntry2[3].split("");
+							//convertDMY[intry2]=convertDate(subDateMonthYear[0]+" 00:00:00");
+							convertDMY[intry2]=indexIntry2[3];
+							//console.log(convertDMY[intry2]);
+							//console.log("-----------------"+intry2);
+						});
+						console.log("--------End--------");
+						
+						$.each(data,function(intry3,indexIntry){
+							//alert("date from "+indexIntry[3]);
+							//alert("date to "+indexIntry[4]);
+						dataSource+=",";
+							
+						var dateFrom2 =convertDate(indexIntry[3]);
+						var dateTo2 =convertDate(indexIntry[4]);
+						//manage check job not unique key
+						
+						var subDateMonthYear2 = indexIntry[3].split(" ");
+						 //convertDMY2[intry3]=convertDate(subDateMonthYear2[0]+" 00:00:00");
+						 convertDMY2[intry3]=indexIntry[3];
+						
+						//alert("dateFrom"+subDateMonthYear[0]);
+						
+						//alert("convertDMY"+convertDMY+"indexHere"+intry2+"jobCate"+index1);
+						//alert(convertDMY[intry2]);
+						dataSource+="{";
+						
+							dataSource+="name:\"&nbsp;\",";
+							//dataSource+="name:\"&nbsp;\",";
+							var JobName = indexIntry[2];
+							var subJobName=JobName.substring(0,11);
+							//alert("newJob["+subJobName+"]");
+							//alert("oldJob["+$("#oldJobName").val()+"]");
+							var numberActual
+							var numberPlan
+							if(indexIntry[6]==null){
+								numberActual = 0;
+							}else{
+								numberActual = indexIntry[6];
+							}
+							if(indexIntry[5]==null){
+								numberPlan=0;
+							}else{
+								numberPlan=indexIntry[5];
+							}
+							if($("#oldJobName").val()==subJobName){
+								dataSource+="desc:\"<div class='boxContent'>&nbsp;</div><div class='boxContent'>-"+indexIntry[2]+"</div><div class='boxContent number' id='planQty'>"+numberPlan+"</div><div class='boxContent number' id='actaulQty'>"+numberActual+"</div>\",";	
+							}else{
+								dataSource+="desc:\"<div class='boxContent'>"+indexIntry[2]+"</div><div class='boxContent'>&nbsp;</div><div class='boxContent number' id='planQty'>"+numberPlan+"</div><div class='boxContent number' id='actaulQty'>"+numberActual+"</div>\",";
+							}
+							$("#jobName").html("<input type='hidden' name='oldJobName' id='oldJobName' value='"+subJobName+"'>");
+								
+								dataSource+="values:[{";
+								dataSource+="from:\"/Date("+dateFrom2+")/\",";
+								dataSource+="to:\"/Date("+dateTo2+")/\",";
+								dataSource+="label:\""+indexIntry[0]+"\",";
+								//alert(convertDMY.length);
+								dataSource+="customClass:\"ganttGreen\",";
+								var $j=1;
+								for(var i=0; i<convertDMY.length; i++){
+									//console.log(""+convertDMY[i]+"=="+convertDMY2[intry3]);
+									if(convertDMY[i]==convertDMY2[intry3]){
+										//console.log(""+convertDMY[i]+"========"+convertDMY2[intry3]);
+										
+										if($j==2){
+											
+											dataSource+="customClass:\"ganttRed\",";
+											break;
+										}
+									$j++;
+									
+									}
+								}
+								console.log("==============================="+intry3);
+								dataSource+="}]";
+						dataSource+="}";
+						j++;
+						});
+						
+						/*
+						setTimeout(function(){
+							$.each(data,function(index,indexIntry){
+								
+								var actual="";
+								
+								$("#RowdId_"+index)
+								.html("<table class='contentTable' width='100%'><tr><td width='120'>"+indexIntry[2]+"</td><td width='120'></td><td width='90'>"+indexIntry[5]+"</td><td>"+indexIntry[6]+"</td></tr></table>");
+								 //management table content
+							    $("table.contentTable").css({"font-family":"Tahoma","font-size":"13px","margin-top":"3px"});
+							});
+						},1000);
+						*/
+						//Conntent format
+						
+						//end ajax
+						}//if
+					}
+				});
+		//End ajax sub
+				
+			});
+			
+			dataSource+="]";
+			//console.log(eval("("+dataSource+")"));
+			objDataSource=eval("("+dataSource+")");
+			console.log(dataSource);
+			console.log(objDataSource);
+			objDataSourceGlobal=objDataSource;
+			gantt(objDataSource);
+			defineHeader();
+		}
+	});
+	}//function callAjax
+	
+	//End ajax main
+	
+	//callContentByAjax default frist start
+	callContentByAjax("",$("#from_date").val(),$("#to_date").val(),"");
+	
+	
+	//submit by ok button here.
+	$("#submit1").click(function(){
+		//alert($("select#machine").val());
+		/*
+		$("#machine").val()
+		$("#from_date").val()
+		$("#to_date").val()
+		$("#year").val()
+		*/
+				callContentByAjax($("select#machine").val(),$("#from_date").val(),$("#to_date").val(),$("#year").val());
+				//callContentByAjax($("select#machine").val(),"01/19/2011","11/19/2012","");
+		        //callContentByAjax($("select#machine").val());
+		
+	});
+	//select view scheduler
+	$("select#select_veiw_id").change(function(){
+		//$(this).val();
+		gantt(objDataSourceGlobal,$(this).val());
+		defineHeader();
+	});
+
+	//define
+	$(".nav-link").live("click",function(){
+		defineHeader();
+	});
+	$(".nav-page-back").live("click",function(){
+		var numBack =parseInt($(".page-number>span").text());
+		if(numBack!=1){
+		numBack = numBack-1;
+				setTimeout(function(){
+					
+					$(".dataPanel .bar").each(function(){
+						//console.log($(this).attr("style"));
+						//alert("hello world");
+						var oldAttr =$(this).attr("style");
+						var subOldAttr = oldAttr.split(";");
+						console.log(subOldAttr[0]);
+						console.log(subOldAttr[1]);
+						console.log(subOldAttr[2]);
+						var numMaginTop =parseInt(subOldAttr[1].substring("12"));
+						console.log(numMaginTop);
+						console.log("----------------");
+						var numPageNumMaginTop=(numBack-1)*384;
+						var NumPage = numMaginTop-numPageNumMaginTop;
+						//alert(NumPage);
+						//style="width: 4679px; margin-top: 98px; margin-left: 72px;">
+						//$(this).attr("style":subOldAttr[0]+";"subOldAttr[1]+";"subOldAttr[2]+";");
+						$(this).css({"margin-top":NumPage+"px"});
+					});
+					
+				},1000);
+		}
+	});
+	$(".nav-page-next").live("click",function(){
+		var numNext =parseInt($(".page-number>span").text());
+		var maxNext = parseInt($(".page-number>span").text().substring(5));
+		//alert(maxNext);
+		if(numNext<maxNext){
+		numNext = numNext+1;
+		setTimeout(function(){
+			
+			$(".dataPanel .bar").each(function(){
+				//console.log($(this).attr("style"));
+				//alert("hello world");
+				var oldAttr =$(this).attr("style");
+				var subOldAttr = oldAttr.split(";");
+				console.log(subOldAttr[0]);
+				console.log(subOldAttr[1]);
+				console.log(subOldAttr[2]);
+				var numMaginTop =parseInt(subOldAttr[1].substring("12"));
+				console.log(numMaginTop);
+				console.log("----------------");
+				var numPageNumMaginTop=(numNext-1)*384;
+				var NumPage = numMaginTop-numPageNumMaginTop;
+				//alert(NumPage);
+				//style="width: 4679px; margin-top: 98px; margin-left: 72px;">
+				//$(this).attr("style":subOldAttr[0]+";"subOldAttr[1]+";"subOldAttr[2]+";");
+				$(this).css({"margin-top":NumPage+"px"});
+			});
+			
+		},1000);
+			
+		
+		
+		}
+		
+	});
+	//callAjaxContent Machine here.
+
+		$.ajax({
+			url:'manufacturing_cate_job.jsp',
+			type:'get',
+			dataType:'json',
+			data:{'param_machine':''},
+			success:function(data){
+				//alert("select machine"+data);
+				var html="";
+				
+				html+="<option value=\"\">All-Machine</option>";
+				$.each(data,function(index,entryIndex){
+					//alert(entryIndex[0]);
+					html+="<option value='"+entryIndex[0]+"'>"+entryIndex[1]+"</option>";
+					
+					
+				});
+				//alert(html);
+				
+				$("#machine").empty();
+				$("select#machine").append(html);
+				
+				$(".listSelect").kendoDropDownList();
+			}
+		});//end ajax;
+		
+		//callAjaxContent Year here.
+		$("select#year").empty();
+		setTimeout(function(){
+			
+			var d = new Date();
+			var yearCurrent=d.getFullYear();
+			var htmlYear="";
+			htmlYear+="<option value=\"\">All-Year</option>";
+			for(var i=0; i<10; i++){
+				htmlYear+="<option value='"+(yearCurrent-i)+"'>"+(yearCurrent-i)+"</option>";
+			}
+			$("select#year").append(htmlYear);
+		
+		},1000);
+	
+	
+		
+		//ajax Start
+
+		$("#loading").ajaxStart(function(){
+		var	width = $("body").width();
+			width = (width/2)-20;
+			hieght =18;
+			//alert("loading now");
+			$(this).fadeIn();
+
+		$(this).css({"top":hieght+"px","left":width}).show();
+		});
+		//ajax Stop
+		$("#loading").ajaxStop(function(){
+		$(this).fadeOut();
+		}); 
+		
+		
+		
+	});
+
+    
+    </script>
+
+<title>Manufacturing Dashboard</title>
+</head>
+<body>
+<div id="loading">Loading....</div>
+<div id="jobName"></div>
+<div id="selectDepartment"></div>
+<div id="dialogBox" title="ผลการค้นหา">
+	<div id="searchGrid" style="height: 390px"></div>
+</div>
+
+<div id="loading">Loading....</div>
+<div id="body">
+	<div id="tabs">
+		<ul>
+			<li>
+				<a href="#content1">Manufacturing Dashboard</a>
+			</li>
+			
+		</ul>
+		<div id="content1">
+		<div id="plantArea" style="padding:5px;">
+
+			<b>Machine</b> : <select name="machine" id="machine" class="listSelect">
+			<option value="all_machine">All-Machine</option>
+			<!--  
+			<option value="Machine1">Machine1</option>
+			<option value="Machine2">Machine2</option>
+			-->
+			
+			</select>
+			<!-- from date area-->
+			<b>Month From</b> : <input type="text" id="from_date" name="from_date" class="date" value=''>
+			<!-- to date area -->
+			<b>Month To</b> : <input type="text" id="to_date" name="to_date" class="date" value=''>
+			<!-- department area -->
+			<b>Year</b> : <select name="year" id="year" class="listSelect">
+			
+			<option value="all_year">All-Year</option>
+			<option value="2011">2011</option>
+			<option value="2012">2012</option>
+			
+			</select>
+			
+			<!-- search area -->
+			<!--  
+	        <b> Search: </b><input type="text" name="search1" id="search1"/>
+	        <input type="submit" id="submit1" name="submit1" value="ค้นหา"/>
+	        -->
+	        <button id="submit1"> &nbsp; OK  &nbsp;</button>
+		</div>
+				<!-- Dash board Content-->
+				<div id="content">
+				
+				<!-- box-->
+					<div class="box">
+						<div class="head">
+							<div class="title">
+							
+							</div>
+                                                        <div class="percen-work-load">
+                                                        <!-- 
+                                                        <div id="jobload">
+                                                         Work Load: <span id="jobLoadResult"></span> Jobs(<span id="jobLoadPercentage" class="redColor">--%</span>)
+                                                         </div>
+                                                         
+                                                         <div id="jobComplete">
+                                                         Work Complete: <span id="jobcompeleteResult"></span> Jobs(<span id="jobCompletePercentage" class="greenColor">--%</span>)
+                                                         </div>
+                                                        -->
+                                                        </div>
+                                                        <div id="select_veiw">
+                                                        <b>View</b>:
+                                                        <select id="select_veiw_id" class="listSelect">
+                                                        	<option value='months'>Months</option>
+                                                        	<option value='weeks'>Weeks</option>
+                                                        	<option value='days' selected>Days</option>
+                                                        	<option value='hours'>Hours</option>
+                                                        </select>
+                                                        </div>
+						</div>
+						<div class="content">
+						<!-- schedule plan machine -->
+						   <div class="gantt"></div>
+						<!-- schedule plan machine-->
+							
+						</div>
+					</div>
+				<!-- box-->
+
+				</div>
+				<!-- content1-->
+				<!-- Dash board Content-->
+				<br style="clear:both">
+				
+			</div>
+			
+				
+	</div>
+	
+</div>
+      
+</body>
+</html>
