@@ -1,0 +1,319 @@
+<html>
+<head>
+    <style>
+    table.k-focusable{
+    position:absolute;
+    }
+    #loading{
+        display: none;
+        position:absolute;
+    }
+    </style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="css/ui-darkness/jquery-ui-1.8.23.custom.css"  type="text/css" rel="stylesheet">
+<link href="css/index.css" type="text/css" rel="stylesheet" >
+<link href="kendo/styles/kendo.default.min.css" type="text/css" rel="stylesheet" >
+<link href="kendo/styles/kendo.black.min.css" type="text/css" rel="stylesheet" >
+
+<link href="kendo/styles/kendo.common.min.css" rel="stylesheet" type="text/css">
+<link href="mygatt.css" rel="stylesheet" type="text/css">
+<script src="js/jquery-1.8.0.min.js"></script>
+<script src="kendo/js/kendo.all.min.js"></script>
+<script src="js/jquery-ui-1.8.23.custom.min.js"></script>
+<script type="text/javascript">
+    
+$(document).ready(function(){
+
+//กำหนดภาพเลื่อน
+var numDown1=0;
+
+var $i=0;
+
+
+//ฟังก์ชันจัดการในส่วนของกำหนดควบคุมข้อมูลส slide Start1
+var defineTimeSlide=function(paramGrid,paramUrl){
+    
+    setTimeout(function(){
+        var $numTR = $(""+paramGrid+" table.k-focusable tbody tr").length;
+        if( $i < $numTR ){
+        var $hieghtTR = $(""+paramGrid+" table.k-focusable tbody tr:eq("+$i+")").height();
+        console.log($hieghtTR);
+        console.log($i);
+        numDown+=-$hieghtTR;
+        dataSlideDown(numDown,paramGrid,paramUrl);
+        //console.log("call method1"+numDown);
+        defineTimeSlide(paramGrid,paramUrl);
+        $i++;
+        
+        }else{
+        $i=0; 
+        defineTimeSlide(paramGrid,paramUrl);
+        }
+        
+    },5000);
+}
+
+var dataSlideDown=function(arNumDown,paramGrid,arParamUrl){   
+    
+var $hieght = $(""+paramGrid+" table.k-focusable").height();
+    //alert(arNumDown+">"+-$hieght);
+    if(arNumDown>-$hieght){
+        $(""+paramGrid+" table.k-focusable").animate({"top":arNumDown});
+    }else{
+        
+        $(""+paramGrid+" table.k-focusable").css({"top":"0px"});
+        numDown=0;
+        callAjaxByDepartment(""+paramGrid+"",""+arParamUrl+"");
+    }
+}
+//ฟังก์ชันจัดการในส่วนของกำหนดควบคุมข้อมูลส slide End1
+
+
+
+
+
+
+
+$("body").css("background","black");
+//jqueyUi tabs
+$("#tabs").tabs();
+
+//.kendoDropDownList  
+$("#plaint").kendoDropDownList();
+
+//defind function grid
+
+var grid = function(gridName,gridData){
+ $(gridName).kendoGrid({
+                        /*dataSource: {
+                            data: createRandomData(50),
+                            pageSize: 10
+                        },*/
+					theme:$(document).data("kendoSkin") || "black",
+					 dataSource: {
+							 data:gridData,
+						 
+						 pageSize: 500
+					 },
+
+                       //groupable: true,
+                       //sortable: true,
+                       //scrollable:true,
+					 pageable: {
+                            refresh: true,
+                            pageSizes: 10
+                        },
+                        columns: [ {
+                                field: "Item",
+                             
+                                title: "Item"
+                            },{
+                                field:"StartingDate",
+                                title:"Starting date"
+                                
+                            },{
+                                field: "JobNo",
+                   
+                                title: "Job No"
+                            },{
+                                field: "Detail",
+                           
+                                title: "Detail"
+                            },{
+                                field: "PlanQty",
+                              
+                                title: "Plan Qty"
+                            }
+                        ]
+                    });
+//grid1
+}
+//call function grid
+//เรียก functionในการสร้าง content ในรูปแบบ json สำหรับ ตาราง grid
+var callAjaxByDepartment=function(paramNameGrid,paramUrl){
+    
+		$.ajax({
+			   url:paramUrl,
+			   //url:'PRMX.jsp'
+			   dataType:'json',
+                          cache: false,
+			   success:function(data){
+				   var gridData="[";
+				   var Item="";
+				   var StartingDate="";
+				   var JobNo="";
+				   var Detail="";
+				   var PlanQty="";
+				   var i=0;
+				   $.each(data,function(index,intryIndex){
+					  if(i==0){
+						 gridData+="{";
+					  }else{
+						 gridData+=",{"; 
+					  }
+					  //console.log(intryIndex[3]);
+					  gridData+="\"Item\":\""+intryIndex[1]+"\",";
+					  gridData+="\"StartingDate\":\""+intryIndex[3]+"\",";
+					  gridData+="\"JobNo\":\""+intryIndex[0]+"\",";
+					  gridData+="\"Detail\":\""+intryIndex[2]+"\",";
+					  gridData+="\"PlanQty\":\""+intryIndex[4]+"\"";
+					  gridData+="}";
+					  i++;
+				   });
+					gridData+="]";
+				  var obj_gridData=eval("("+gridData+")");
+                                  $(paramNameGrid).empty();
+				  grid(paramNameGrid,obj_gridData);
+				  /*
+				  grid("#grid2",obj_gridData);
+				  grid("#grid3",obj_gridData);
+				  grid("#grid4",obj_gridData);
+				  */
+			   }
+			});
+
+}//callAjaxByDepartment
+
+
+//Call function for run data content of  Department
+callAjaxByDepartment("#grid1","PRMX.jsp");
+callAjaxByDepartment("#grid4","APKX.jsp");
+//ลำดับการทำงานการเลื่อน
+defineTimeSlide("#grid1","PRMX.jsp");
+
+defineTimeSlide("#grid4","APKX.jsp");
+
+
+//config grid template
+$(".k-grid td").css({"padding-top":"0px","padding-bottom":"0px"});
+
+//ajax Start
+
+$("#loading").ajaxStart(function(){
+$(this).show();
+});
+//ajax Stop
+$("#loading").ajaxStop(function(){
+$(this).hide();
+});  
+
+});//jquery
+
+</script>
+
+<title>DashBoard</title>
+</head>
+<body>
+<div id="loading">Loading....</div>
+<div id="body">
+	<div id="tabs">
+		<ul>
+			<li>
+				<a href="#content1">Status overview</a>
+			</li>
+			<!--
+			<li>
+				<a href="#content2">Menu schedule</a>
+			</li>
+			
+			<li>
+				<a href="#content3">Schedule</a>
+			</li>
+			-->
+		</ul>
+		<div id="content1">
+		<div id="plant" style="padding:5px;">
+
+		<b>Plant</b> : <select name="plaint" id="plaint">
+		<option>plant1</option>
+		<option>plant2</option>
+		<option>plant3</option>
+		</select>
+		</div>
+				<!-- Dashboard Content-->
+				<div id="content">
+				
+				<!-- box-->
+					<div class="box">
+						<div class="head">
+							<div class="title">
+							ชั่งสาร
+							</div>
+						</div>
+						<div class="content">
+						<!-- table-->
+						   <div id="grid1" style="height: 270px"></div>
+						<!-- table-->
+							
+						</div>
+					</div>
+				<!-- box-->
+				<!-- box-->
+					<div class="box">
+						<div class="head">
+						
+							<div class="title">
+							ผสม
+							</div>
+						</div>
+						<div class="content">
+						<!-- table-->
+						  <div id="grid2" style="height: 270px"></div>
+						<!-- table-->
+						</div>
+					</div>
+				<!-- box-->
+				<!-- box-->
+					<div class="box">
+						<div class="head">
+							<div class="title">
+							บรรจุ
+							</div>
+						</div>
+						<div class="content">
+						<!-- table-->
+						  <div id="grid3" style="height: 270px"></div>
+						<!-- table-->
+						</div>
+					</div>
+				<!-- box-->
+				<!-- box-->
+					<div class="box">
+						<div class="head">
+							<div class="title">
+							ประกอบ
+							</div>
+						</div>
+						<div class="content">
+						<!-- table-->
+						  <div id="grid4" style="height: 270px"></div>
+						<!-- box-->
+				
+				</div><!-- content1-->
+				
+				<!-- Dashboard Content-->
+				<br style="clear:both">
+				
+			</div>
+			<div id="content2">
+			<!-- ganttChat-->
+
+			<!-- ganttChat-->
+				</div>
+			<div id="content4">
+			<!-- ganttChat-->
+
+			<!-- ganttChat-->
+				</div>
+				<br style="clear:both">
+	</div>
+	
+</div>
+<div id="content3">
+			<!-- ganttChat-->
+
+			<!-- ganttChat-->
+				</div>
+            
+</body>
+</html>
