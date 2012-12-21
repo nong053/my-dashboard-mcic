@@ -4,9 +4,7 @@
    table.k-focusable{
     position:absolute;
     }
-   *{
-   font:Tahoma 12px;
-   }
+   
     #loading{
         display: none;
         position:absolute;
@@ -15,7 +13,6 @@
     }
     .k-grid-content{
         overflow-y:hidden;
-        color:white;
     }
     #selectDepartment{
     	display:none;
@@ -28,7 +25,6 @@
     }
     #dialogBox{
     	display:none;
-    
     }
     #searchArea{
     float:right;
@@ -48,9 +44,6 @@
     #planQty{
     display:block;
     width:55px;
-    margin:1px;
-    border:1px solid #dddddd;
-    height:19px;
     }
     .number{
     text-align:right;
@@ -59,40 +52,7 @@
     #actaulQty{
     display:block;
     width:65px;
-    margin:1px;
-    border:1px solid #dddddd;
-    height:19px;
     }
-    .ganttYellow{
-    background:yellow;
-    }
-    .ganttRed{
-    background:Red;
-    }
-
-	#tooltip{
-	width:auto;
-	height:auto;
-	position:absolute;
-	z-index:10;
-	background:white;
-	display:none;
-	border-radius:5px;
-	border:1px solid #cccccc;
-	cursor:pointer;
-	padding:5px;
-}
-.fontTooltip{
- font-family:Tahoma;
- font-size:13px;
-}
-#search1{
-margin-bottom:0;
-}
-
-#searchGrid{
-	color:white;
-}
    
     </style>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -101,7 +61,6 @@ margin-bottom:0;
 <link href="kendo/styles/kendo.default.min.css" type="text/css" rel="stylesheet" >
 <link href="kendo/styles/kendo.black.min.css" type="text/css" rel="stylesheet" >
 <link href="kendo/styles/kendo.common.min.css" rel="stylesheet" type="text/css">
-<link href="plugin/tooltip.css" rel="stylesheet" type="text/css">
 
 <link rel="stylesheet" href="css/style.css" />
         
@@ -109,7 +68,7 @@ margin-bottom:0;
         <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" />
         <link rel="stylesheet" href="http://taitems.github.com/UX-Lab/core/css/prettify.css" />
        
-       <!-- 
+
 		<style type="text/css">
 			body {
 				font-family: Helvetica, Arial, sans-serif;
@@ -135,13 +94,16 @@ margin-bottom:0;
 			}
 		</style>
 		
-		 -->
-<script src="js/jquery-1.7.2.min.js"></script>		 
+		
+		 
+<script src="js/jquery-1.7.2.min.js"></script>
+<!--
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>		 
+    <script src="js/jquery-1.8.0.min.js"></script>
+ -->
 <script src="kendo/js/kendo.all.min.js"></script>
 <script src="js/jquery-ui-1.8.23.custom.min.js"></script>
 <script type="text/javascript" src="dev_js/manufacturing_dashboard.js"></script>
-<script type="text/javascript" src="plugin/jquery.tooltip.js"></script>
-
 
 	<script src="js/jquery.fn.gantt.js"></script>
 	<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
@@ -182,170 +144,7 @@ margin-bottom:0;
     
    
     $(document).ready(function(){
-    	
-    	//define element search add in tab  on left and top position.
-    	$(".ui-tabs-nav").append("<div id='searchArea'>Search: <input type='text' id='search1' name='search1'><button id='submitSearh'>Search</button></div>");
-
-		
-    	var selectAuto = function(){
-    		$.ajax({
-    			url:'autoSelect.jsp',
-    			type:'get',
-    			dataType:'json',
-    			success:function(data){
-    				
-    			searchFunction(data[0]);
-    				
-    			}
-    		});
-    	};
-    	selectAuto();
-    	var searchFunction  = function(paramDataSearAuto){
-    		$("#search1").kendoAutoComplete({
-    			dataSource: paramDataSearAuto,
-    		    filter: "startswith",
-    		    placeholder: "Select Job No...",
-    		    //separator: ", "
-    		});
-    	};
-
-    	//gridSearch End
-
-
-    	$("#submitSearh").click(function(){
-    		
-    		//Dialogbox alert grid result when click search submit
-    		
-    		
-    		$("#dialogBox").dialog({
-    			height: 450,
-    			width: 1300,
-    	        modal: true,
-    	        title:"ผลการค้นหา"
-    		}).hide();
-    		$(".ui-dialog-content").css({"padding":"0px"});
-    		$("#dialogBox").show(1000);
-    		
-    		//call content Job equere Machine by ajax
-    		$.ajax({
-    			url:'manufacturing_search_job.jsp',
-    			type:'get',
-    			dataType:'json',
-    			data:{'paramJob':$("#search1").val()},
-    			success:function(data){
-    				//alert(data);
-    				var dataSource="";
-    				dataSource+="[";
-    				$.each(data,function(index,indexEntry){
-    					console.log(indexEntry[0]+""+indexEntry[1]+""+indexEntry[2]+""+indexEntry[3]+""+indexEntry[4]+""+indexEntry[5]+""+indexEntry[6]+""+indexEntry[7]);
-    					if(index==0){
-    						dataSource+="{";
-    					}else{
-    						dataSource+=",{";
-    					}
-    						dataSource+="\"MachineCode\":\""+indexEntry[0]+"\",";
-    						dataSource+="\"Machine\":\""+indexEntry[1]+"\",";
-    						dataSource+="\"MainJob\":\""+indexEntry[2]+"\",";
-    						dataSource+="\"PlanQty\":\""+indexEntry[5]+"\",";
-    						dataSource+="\"ActualQty\":\""+indexEntry[6]+"\",";
-    						dataSource+="\"StartDate\":\""+indexEntry[3]+"\",";
-    						dataSource+="\"EndDate\":\""+indexEntry[4]+"\",";
-    						dataSource+="\"Status\":\""+indexEntry[7]+"\",";
-    					
-    						
-    						dataSource+="}";
-    				});
-    				dataSource+="]";
-    				var objDataSource = eval("("+dataSource+")");
-    				searchFucntion(objDataSource);
-    				
-    				//var dataSource="[{\"Machine\":\"value002\",\"MainJob\":\"value001\",\"PlanQty\":\"value001\",\"ActualQty\":\"value002\",\"StartDate\":\"value001\",\"EndDate\":\"value002\"}]";
-    				//searchFucntion(dataSource);
-    				/*
-    				[
-					{"Machine":"value002","MainJob":"value001","PlanQty":"value001","ActualQty":"value002","StartDate":"value001","EndDate":"value002"}
-					
-					]
-    				*/
-    				//var dataSource="[{'Machine':'value002','MainJob':'value001','PlanQty':'value001','ActualQty':'value002','StartDate':'value001','EndDate':'value002'}]"; 
-    	   			//var objDataSource = eval("("+dataSource+")");
-    	   			
-    	   			//searchFucntion(objDataSource);
-    			}
-    			
-    		});
-    		
-    				
-    		
-    		var searchFucntion = function(dataSource){
-    		$("#searchGrid").empty();
-    		$("#searchGrid").kendoGrid({
-    			height: 600,
-    			theme:$(document).data("kendoSkin") || "black",
-				 dataSource: {
-					data:dataSource
-				 },
-			
-                  scrollable:true,
-                  columns: [
-						{
-						    field: "MachineCode",
-						    width:150,
-						    title: "<b>Machine Code</b>"
-						},{
-						    field: "Machine",
-						    width:230,
-						    title: "<b>Machine</b>"
-						},{
-                           field:"MainJob",
-                           width:170,
-                           
-                           title:"<b>Job Name</b>"
-                           
-                       },{
-                           field: "PlanQty",
-                           width:120,
-              
-                           title: "<b>Plan Qty</b>"
-                       },{
-                           field: "ActualQty",
-                           width:120,
-              
-                           title: "<b>Actual Qty</b>"
-                       },{
-                           field: "StartDate",
-                           width:190,
-              
-                           title: "<b>Start Date</b>"
-                       },{
-                           field: "EndDate",
-                           width:190,
-                           title: "<b>End Date</b>"
-                       }
-                       ,{
-                           field: "Status",
-                          
-                           title: "<b>Status</b>"
-                       }
-                       
-                   ]
-               });
-    		$("#searchGrid >.k-grid-content").css({"overflow-y":"hidden"});
-			$(".k-focusable").css({"color":"white"});
-   			};
-
-    	});
- 
     	$(".date").kendoDatePicker();
-    	var myDate=new Date;
-    	var year=myDate.getFullYear();
-    	var day =myDate.getDate();
-    	var month=myDate.getMonth();
-    	var currentMonthForm= (month+1)+"/01/"+year;
-    	var currentMonthTo= (month+1)+"/"+day+"/"+year;
-    	
-    	$("#from_date").val(currentMonthForm);
-    	$("#to_date").val(currentMonthTo);
     	
     	//$(".listSelect").kendoDropDownList();
     	
@@ -378,14 +177,12 @@ $(function() {
 				//maxScale: "hours",
 				//minScale: "hours",
 				itemsPerPage: 16,
-				/*
 				onItemClick: function(data) {
 					//alert("Item clicked - show some details");
 				},
 				onAddClick: function(dt, rowId) {
-					alert("Empty space clicked - add an item!");
+					//alert("Empty space clicked - add an item!");
 				}
-				*/
 			});
 			
 			$(".gantt").popover({
@@ -406,11 +203,7 @@ $(function() {
 			//alert($(".leftPanel div.spacer").length);
 			$(".leftPanel div.spacer").empty();
 			$(".leftPanel div.spacer").html(html);
-			
-			var heightTitle = $(".leftPanel>.spacer").attr("style").split(";");
-			var arHeightTitle=parseInt(heightTitle[0].substring("7"));
-			
-			$("#headerTable").css({"margin-top":""+(arHeightTitle-22)+"px","margin-left":"","font-size":"13px"});
+			$("#headerTable").css({"margin-top":"70px","margin-left":"","font-size":"13px"});
 			//management table header
 		    $("table#headerTable tr").css({"border-top":"1px solid #cccccc","border-bottom":"1px solid #cccccc","background":"#dddddd"});
 		    $("table#headerTable tr td:eq(0)").css({"padding-left":"5px"});
@@ -489,7 +282,7 @@ $(function() {
 		data:{'param_machine':arg_cate_machine},
 		cache:false,
 		success:function(data){
-			//alert(data);
+			
 			var dateFrom="";
 			var dateTo="";
 			dataSource+="[";
@@ -500,48 +293,41 @@ $(function() {
 			$.each(data,function(index1,indexIntry){
 				//alert(i);
 				//alert("cate_job"+indexIntry[0]);
-				
-				
+				if(i!=0){
+				dataSource+=",";
+				}
 				
 				$.ajax({
 					url:'scope_machine.jsp',
 					type:'get',
 					dataType:'json',
 					async:false,
-					data:{'machine_id':indexIntry[0],'paramFromDate':arg_from_date,'paramToDate':arg_to_date},
+					data:{'machine_id':indexIntry[0]},
 					success:function(data){
-						
-						
-						//alert("cate_scopt_date_from111"+data[0][0]);
+						 //alert("cate_scopt_date_from"+data[0][0]);
 						 //alert("cate_scopt_date_to"+data[0][1]);
-						
-						 if(data[0][0]!=null && data[0][1]!=null){
-							 if(i!=0){
-									dataSource+=",";
-									}
-							 //alert("cate_scopt_date_from222"+data[0][0]);
 						 dateFrom =convertDate(data[0][0]);
 						 dateTo =convertDate(data[0][1]);
-						 dataSource+="{";
-							dataSource+="name:\""+indexIntry[1]+"\",";
-							//dataSource+="name:\"&nbsp;\",";
-							dataSource+="desc:\" &nbsp;\",";
-							dataSource+="values:[{";
-								dataSource+="from:\"/Date("+dateFrom+")/\",";
-								dataSource+="to:\"/Date("+dateTo+")/\",";
-								dataSource+="label:\""+indexIntry[0]+"\",";
-								dataSource+="customClass:\"ganttBlue\",";
-								dataSource+="}]";
-						dataSource+="}";
 						
-						
-						
-						
-						
-						 }
 					}	
 				});
-				i++;//num around category job
+
+				dataSource+="{";
+					dataSource+="name:\""+indexIntry[1]+"\",";
+					//dataSource+="name:\"&nbsp;\",";
+					dataSource+="desc:\" &nbsp;\",";
+					dataSource+="values:[{";
+						dataSource+="from:\"/Date("+dateFrom+")/\",";
+						dataSource+="to:\"/Date("+dateTo+")/\",";
+						dataSource+="label:\""+indexIntry[0]+"\",";
+						dataSource+="customClass:\"ganttYellow\",";
+						dataSource+="}]";
+				dataSource+="}";
+				i++;
+				
+				
+			
+				
 				//Start ajax sub
 		
 				$.ajax({
@@ -552,7 +338,7 @@ $(function() {
 					cache:false,
 					async:false,
 					success:function(data){
-					//alert(data);
+					
 						if(data =="null" || data ==""){
 							console.log("data is empty");
 						}else{
@@ -562,7 +348,8 @@ $(function() {
 						var subDateMonthYear="";
 						
 						$.each(data,function(intry2,indexIntry2){
-							subDateMonthYear = indexIntry2[3].split("");
+						
+							subDateMonthYear = indexIntry2[3].split(" ");
 							//convertDMY[intry2]=convertDate(subDateMonthYear[0]+" 00:00:00");
 							convertDMY[intry2]=indexIntry2[3];
 							//console.log(convertDMY[intry2]);
@@ -571,9 +358,10 @@ $(function() {
 						console.log("--------End--------");
 						
 						$.each(data,function(intry3,indexIntry){
-							//alert("date from and date to "+indexIntry[3]+" "+indexIntry[4]);
-							//alert("intry3 "+intry3);
+							//alert("date from "+indexIntry[3]);
+							//alert("date to "+indexIntry[4]);
 						dataSource+=",";
+							
 						var dateFrom2 =convertDate(indexIntry[3]);
 						var dateTo2 =convertDate(indexIntry[4]);
 						//manage check job not unique key
@@ -591,9 +379,8 @@ $(function() {
 							dataSource+="name:\"&nbsp;\",";
 							//dataSource+="name:\"&nbsp;\",";
 							var JobName = indexIntry[2];
-							//var subJobName=JobName.substring(0,12);
-							var subJobName=JobName.split("-");
-							//alert("newJob["+subJobName[0]+"-"+subJobName[1]+"]");
+							var subJobName=JobName.substring(0,11);
+							//alert("newJob["+subJobName+"]");
 							//alert("oldJob["+$("#oldJobName").val()+"]");
 							var numberActual
 							var numberPlan
@@ -607,30 +394,24 @@ $(function() {
 							}else{
 								numberPlan=indexIntry[5];
 							}
-							if($("#oldJobName").val()==subJobName[0]+"-"+subJobName[1]){
-								dataSource+="desc:\"<div class='boxContent'>&nbsp;</div><div class='boxContent'>-"+indexIntry[2]+"</div><div class='boxContent number' id='planQty'>"+numberPlan+"</div><div class='boxContent number' id='actaulQty'>"+numberActual+"</div>\",";	
+							if($("#oldJobName").val()==subJobName){
+								dataSource+="desc:\"<div class='boxContent'>&nbsp;</div><div class='boxContent'>"+indexIntry[2]+"</div><div class='boxContent number' id='planQty'>"+numberPlan+"</div><div class='boxContent number' id='actaulQty'>"+numberActual+"</div>\",";	
 							}else{
 								dataSource+="desc:\"<div class='boxContent'>"+indexIntry[2]+"</div><div class='boxContent'>&nbsp;</div><div class='boxContent number' id='planQty'>"+numberPlan+"</div><div class='boxContent number' id='actaulQty'>"+numberActual+"</div>\",";
 							}
-							$("#jobName").html("<input type='hidden' name='oldJobName' id='oldJobName' value='"+subJobName[0]+"-"+subJobName[1]+"'>");
+							$("#jobName").html("<input type='hidden' name='oldJobName' id='oldJobName' value='"+subJobName+"'>");
 								
 								dataSource+="values:[{";
 								dataSource+="from:\"/Date("+dateFrom2+")/\",";
 								dataSource+="to:\"/Date("+dateTo2+")/\",";
-								dataSource+="label:\"<div class='detailJob' title='<b>Machine</b> "+indexIntry[0]+"<br><b>Job</b> "+indexIntry[2]+"<br><b>Start</b> "+indexIntry[3]+"<br><b>End</b> "+indexIntry[4]+"'>"+indexIntry[0]+"</div>\",";
+								dataSource+="label:\""+indexIntry[0]+"\",";
 								//alert(convertDMY.length);
-								//alert(indexIntry[7]);
-								if(indexIntry[7]=="Unreleased"){
-									dataSource+="customClass:\"ganttOrange\",";
-								}else{
-									dataSource+="customClass:\"ganttGreen\",";
-								}
-								
+								dataSource+="customClass:\"ganttGreen\",";
 								var $j=1;
 								for(var i=0; i<convertDMY.length; i++){
-									//console.log(""+convertDMY[i]+"=="+convertDMY2[intry3]);
+									console.log(""+convertDMY[i]+"=="+convertDMY2[intry3]);
 									if(convertDMY[i]==convertDMY2[intry3]){
-										//console.log(""+convertDMY[i]+"========"+convertDMY2[intry3]);
+										console.log(""+convertDMY[i]+"========"+convertDMY2[intry3]);
 										
 										if($j==2){
 											
@@ -643,8 +424,10 @@ $(function() {
 								}
 								console.log("==============================="+intry3);
 								dataSource+="}]";
+								
+								
+								
 						dataSource+="}";
-						
 						j++;
 						});
 						
@@ -667,15 +450,15 @@ $(function() {
 						}//if
 					}
 				});
-				//End ajax sub
+		//End ajax sub
 				
 			});
 			
 			dataSource+="]";
 			//console.log(eval("("+dataSource+")"));
 			objDataSource=eval("("+dataSource+")");
-			console.log(dataSource);
-			console.log(objDataSource);
+			
+			console.log("call11111111111111111111111111111111111 ganntt 2"+objDataSource);
 			objDataSourceGlobal=objDataSource;
 			gantt(objDataSource);
 			defineHeader();
@@ -685,8 +468,8 @@ $(function() {
 	
 	//End ajax main
 	
-	//callContentByAjax default frist start
-	callContentByAjax("",$("#from_date").val(),$("#to_date").val(),"");
+	//callContentByAjax
+	callContentByAjax();
 	
 	
 	//submit by ok button here.
@@ -701,11 +484,6 @@ $(function() {
 				callContentByAjax($("select#machine").val(),$("#from_date").val(),$("#to_date").val(),$("#year").val());
 				//callContentByAjax($("select#machine").val(),"01/19/2011","11/19/2012","");
 		        //callContentByAjax($("select#machine").val());
-		        setTimeout(function(){
-		        	tooltip();
-		        },1000);
-		        
-				
 		
 	});
 	//select view scheduler
@@ -713,13 +491,11 @@ $(function() {
 		//$(this).val();
 		gantt(objDataSourceGlobal,$(this).val());
 		defineHeader();
-		tooltip();
 	});
 
 	//define
 	$(".nav-link").live("click",function(){
 		defineHeader();
-		tooltip();
 	});
 	$(".nav-page-back").live("click",function(){
 		var numBack =parseInt($(".page-number>span").text());
@@ -829,6 +605,7 @@ $(function() {
 		
 		//ajax Start
 
+		/*
 		$("#loading").ajaxStart(function(){
 		var	width = $("body").width();
 			width = (width/2)-20;
@@ -842,57 +619,21 @@ $(function() {
 		$("#loading").ajaxStop(function(){
 		$(this).fadeOut();
 		}); 
-		
-		//tooltip
-		var tooltip = function(){
-			setTimeout(function(){
-			//$("#loading").show();
-			console.log($(".bar>.fn-label>.detailJob").get());
-			
-			var titleJob ="";
-			$(".bar>.fn-label>.detailJob").hover(function(e){
-				titleJob =$(this).attr("title");
-				
-				var leftPosition=e.pageX+10;
-				var topPosition = e.pageY+10;
-				//alert("Position"+leftPosition+""+topPosition);
-				$("#tooltip").html(titleJob);
-				$("#tooltip").css({"top":topPosition+"px","left":leftPosition+"px"}).addClass("fontTooltip").show();
-				//$(this).attr("title","");
-				//e.preventDefault();
-				$(this).data('title', $(this).attr('title'));
-		        $(this).removeAttr('title');
-			},function(){
-				//$(this).attr("title",titleJob);
-				//$("#loading").hide();
-				$("#tooltip").hide();
-				 $(this).attr('title', $(this).data('title'));
-			});
-			},1000);
-		}
-		
-		setTimeout(function(){
-			tooltip();
-		},3000);
-			
-		
+		*/
 		
 	});
 
+    
     </script>
 
 <title>Manufacturing Dashboard</title>
 </head>
 <body>
-
+<div id="loading">Loading....</div>
 <div id="jobName"></div>
 <div id="selectDepartment"></div>
 <div id="dialogBox" title="ผลการค้นหา">
-	<div id="searchGrid" style="height: 1000px;">
-	
-	</div>
-	<br style="clear:both">
-	
+	<div id="searchGrid" style="height: 390px"></div>
 </div>
 
 <div id="loading">Loading....</div>
@@ -985,8 +726,6 @@ $(function() {
 	</div>
 	
 </div>
-<div id="tooltip">test Tooltip here</div>
-
-
+      
 </body>
 </html>

@@ -381,7 +381,6 @@ $("body").css("background","black");
 //jqueyUi tabs
 $("#tabs").tabs();
 //define element search add in tab  on left and top position.
-
 $(".ui-tabs-nav").append("<div id='searchArea'>Search: <input type='text' id='search1' name='search1'><button id='submitSearh'>Search</button></div>");
 
 
