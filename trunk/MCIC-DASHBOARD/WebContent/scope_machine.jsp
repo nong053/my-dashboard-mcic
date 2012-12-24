@@ -2,12 +2,12 @@
 <%@ include file="config.jsp"%>
 <%
 
-String paramPlant = request.getParameter("paramPlant");
+
 String paramFromDate = request.getParameter("paramFromDate");
 String paramToDate = request.getParameter("paramToDate");
-String paramDepartment = request.getParameter("paramDepartment");
-String paramJobNumber = request.getParameter("paramJobNumber");
 String machine_id = request.getParameter("machine_id");
+String paramYear = request.getParameter("paramYear");
+
 
 
 ResultSet rs;
@@ -34,8 +34,11 @@ query+=" WHERE ML.LOOKUP_TYPE = 'WIP_JOB_STATUS'";
 query+=" AND WDJ.STATUS_TYPE IN (1, 3) AND WDR.RESOURCE_TYPE = 'Machine'";
 query+=" AND WDR.SHARE_FROM_DEPARTMENT = WOV.DEPARTMENT_CODE AND WOV.OPERATION_SEQ_NUM =20";
 query+=" AND WDR.RESOURCE_CODE='"+machine_id+"'";
+if(paramYear!=""){
+query+=" AND to_char(WOV.FIRST_UNIT_START_DATE,'YYYY') ='"+paramYear+"'";	
+}else{
 query+=" AND to_char(WOV.FIRST_UNIT_START_DATE,'MM/DD/YYYY') between '"+paramFromDate+"' AND '"+paramToDate+"' ";
-
+}
 /*AND ROWNUM <5*/
 
 

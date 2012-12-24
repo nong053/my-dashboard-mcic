@@ -42,12 +42,12 @@
     }
     .boxContent{
     display:block;
-    width:120px;
+    width:115px;
     float:left;
     }
     #planQty{
     display:block;
-    width:55px;
+    width:65px;
     margin:1px;
     border:1px solid #dddddd;
     height:19px;
@@ -62,6 +62,7 @@
     margin:1px;
     border:1px solid #dddddd;
     height:19px;
+    margin-left:10px;
     }
     .ganttYellow{
     background:yellow;
@@ -93,6 +94,7 @@ margin-bottom:0;
 #searchGrid{
 	color:white;
 }
+
    
     </style>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -106,8 +108,8 @@ margin-bottom:0;
 <link rel="stylesheet" href="css/style.css" />
         
         
-        <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" />
-        <link rel="stylesheet" href="http://taitems.github.com/UX-Lab/core/css/prettify.css" />
+        <link rel="stylesheet" href="css/bootstrap.css" />
+        <link rel="stylesheet" href="css/prettify.css" />
        
        <!-- 
 		<style type="text/css">
@@ -144,9 +146,9 @@ margin-bottom:0;
 
 
 	<script src="js/jquery.fn.gantt.js"></script>
-	<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
-	<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-popover.js"></script>
-	<script src="http://taitems.github.com/UX-Lab/core/js/prettify.js"></script>
+	<script src="js/bootstrap-tooltip.js"></script>
+	<script src="js/bootstrap-popover.js"></script>
+	<script src="js/prettify.js"></script>
     <script>
     
     //function convert date to timestamp
@@ -280,10 +282,15 @@ margin-bottom:0;
     		var searchFucntion = function(dataSource){
     		$("#searchGrid").empty();
     		$("#searchGrid").kendoGrid({
-    			height: 600,
+    			height: 400,
+    			 pageable: {
+                     refresh: true,
+                     pageSizes: true
+                 },
     			theme:$(document).data("kendoSkin") || "black",
 				 dataSource: {
-					data:dataSource
+					data:dataSource,
+					 pageSize: 6
 				 },
 			
                   scrollable:true,
@@ -358,6 +365,7 @@ $(function() {
 		var argScale =(typeof argScale==="undefined")?"days":argScale;
 		var argDataSource = (typeof argDataSource==="undefined")?"":argDataSource;
 		//alert("argDataSource"+argDataSource);
+		
 			$(".gantt").gantt({
 				source: argDataSource,
 				
@@ -460,13 +468,21 @@ $(function() {
 		 var $day=arrayDayTime[0];
 		 var $time=arrayDayTime[1];
 		
-		 var newDate=myDate[1]+"/"+$day+"/"+myDate[0]+" "+$time;
+		// var newDate=myDate[1]+"/"+$day+"/"+myDate[0]+" "+$time;
+		 var newDate=myDate[1]+"/"+$day+"/"+myDate[0];
 		 //alert(newDate);
 		 //01/17/2013 00:00:00
 		 return new Date(newDate).getTime();
 		
 		}
-	
+	//Add Commas
+	function numberWithCommas(x) {
+	    x = x.toString();
+	    var pattern = /(-?\d+)(\d{3})/;
+	    while (pattern.test(x))
+	        x = x.replace(pattern, "$1,$2");
+	    return x;
+	}
 	var callContentByAjax = function(arg_cate_machine,arg_from_date,arg_to_date,arg_year){
 		
 		var dataSource = "";
@@ -482,6 +498,7 @@ $(function() {
 		//alert(arg_cate_machine);
 		
 	//Start ajax main
+	var i=0;
 	$.ajax({
 		url:'manufacturing_cate_job.jsp',
 		type:'get',
@@ -493,7 +510,7 @@ $(function() {
 			var dateFrom="";
 			var dateTo="";
 			dataSource+="[";
-			var i=0;
+			
 			var j=0;
 			var convertDMY=new Array();
 			var convertDMY2=new Array();
@@ -508,21 +525,25 @@ $(function() {
 					type:'get',
 					dataType:'json',
 					async:false,
-					data:{'machine_id':indexIntry[0],'paramFromDate':arg_from_date,'paramToDate':arg_to_date},
+					data:{'machine_id':indexIntry[0],'paramFromDate':arg_from_date,'paramToDate':arg_to_date,'paramYear':arg_year},
 					success:function(data){
 						
 						
 						//alert("cate_scopt_date_from111"+data[0][0]);
-						 //alert("cate_scopt_date_to"+data[0][1]);
+						//alert("cate_scopt_date_to"+data[0][1]);
 						
 						 if(data[0][0]!=null && data[0][1]!=null){
-							 if(i!=0){
-									dataSource+=",";
+							 if(i==0){
+									alert("i=="+i);
+								 	dataSource+="{";
+									}else{
+									dataSource+=",{";	
 									}
+							i++;//num around category job
 							 //alert("cate_scopt_date_from222"+data[0][0]);
 						 dateFrom =convertDate(data[0][0]);
 						 dateTo =convertDate(data[0][1]);
-						 dataSource+="{";
+						 //dataSource+="{";
 							dataSource+="name:\""+indexIntry[1]+"\",";
 							//dataSource+="name:\"&nbsp;\",";
 							dataSource+="desc:\" &nbsp;\",";
@@ -541,7 +562,7 @@ $(function() {
 						 }
 					}	
 				});
-				i++;//num around category job
+				
 				//Start ajax sub
 		
 				$.ajax({
@@ -600,12 +621,12 @@ $(function() {
 							if(indexIntry[6]==null){
 								numberActual = 0;
 							}else{
-								numberActual = indexIntry[6];
+								numberActual = numberWithCommas(indexIntry[6]);
 							}
 							if(indexIntry[5]==null){
 								numberPlan=0;
 							}else{
-								numberPlan=indexIntry[5];
+								numberPlan=numberWithCommas(indexIntry[5]);
 							}
 							if($("#oldJobName").val()==subJobName[0]+"-"+subJobName[1]){
 								dataSource+="desc:\"<div class='boxContent'>&nbsp;</div><div class='boxContent'>-"+indexIntry[2]+"</div><div class='boxContent number' id='planQty'>"+numberPlan+"</div><div class='boxContent number' id='actaulQty'>"+numberActual+"</div>\",";	
@@ -617,7 +638,7 @@ $(function() {
 								dataSource+="values:[{";
 								dataSource+="from:\"/Date("+dateFrom2+")/\",";
 								dataSource+="to:\"/Date("+dateTo2+")/\",";
-								dataSource+="label:\"<div class='detailJob' title='<b>Machine</b> "+indexIntry[0]+"<br><b>Job</b> "+indexIntry[2]+"<br><b>Start</b> "+indexIntry[3]+"<br><b>End</b> "+indexIntry[4]+"'>"+indexIntry[0]+"</div>\",";
+								dataSource+="label:\"<div class='detailJob' title='<b>Machine</b> "+indexIntry[0]+"<br><b>Job</b> "+indexIntry[2]+"<br><b>Start</b> "+indexIntry[3]+"<br><b>End</b> "+indexIntry[4]+"<br><b>Status</b> "+indexIntry[7]+"'>"+indexIntry[0]+"</div>\",";
 								//alert(convertDMY.length);
 								//alert(indexIntry[7]);
 								if(indexIntry[7]=="Unreleased"){
@@ -634,7 +655,7 @@ $(function() {
 										
 										if($j==2){
 											
-											dataSource+="customClass:\"ganttRed\",";
+											dataSource+="customClass:\"ganttRed\"";
 											break;
 										}
 									$j++;
@@ -677,8 +698,16 @@ $(function() {
 			console.log(dataSource);
 			console.log(objDataSource);
 			objDataSourceGlobal=objDataSource;
-			gantt(objDataSource);
+			//alert(dataSource);
+			if(dataSource=="[]"){
+				alert("Not found data");
+			}else{
+			
+			gantt(objDataSource,$("#select_veiw_id").val());
 			defineHeader();
+			
+			
+			}
 		}
 	});
 	}//function callAjax
@@ -706,7 +735,6 @@ $(function() {
 		        },1000);
 		        
 				
-		
 	});
 	//select view scheduler
 	$("select#select_veiw_id").change(function(){
@@ -807,11 +835,12 @@ $(function() {
 				$("select#machine").append(html);
 				
 				$(".listSelect").kendoDropDownList();
+				$("#machine").kendoDropDownList({width:250});
 			}
 		});//end ajax;
 		
 		//callAjaxContent Year here.
-		$("select#year").empty();
+		//$("select#year").empty();
 		setTimeout(function(){
 			
 			var d = new Date();
@@ -821,7 +850,7 @@ $(function() {
 			for(var i=0; i<10; i++){
 				htmlYear+="<option value='"+(yearCurrent-i)+"'>"+(yearCurrent-i)+"</option>";
 			}
-			$("select#year").append(htmlYear);
+			$("select#year").html(htmlYear);
 		
 		},1000);
 	
@@ -888,10 +917,10 @@ $(function() {
 <div id="jobName"></div>
 <div id="selectDepartment"></div>
 <div id="dialogBox" title="ผลการค้นหา">
-	<div id="searchGrid" style="height: 1000px;">
+	<div id="searchGrid">
 	
 	</div>
-	<br style="clear:both">
+
 	
 </div>
 
@@ -907,7 +936,7 @@ $(function() {
 		<div id="content1">
 		<div id="plantArea" style="padding:5px;">
 
-			<b>Machine</b> : <select name="machine" id="machine" class="listSelect">
+			<b>Machine</b> : <select name="machine" id="machine" >
 			<option value="all_machine">All-Machine</option>
 			<!--  
 			<option value="Machine1">Machine1</option>
@@ -923,9 +952,10 @@ $(function() {
 			<b>Year</b> : <select name="year" id="year" class="listSelect">
 			
 			<option value="all_year">All-Year</option>
+			<!--  
 			<option value="2011">2011</option>
 			<option value="2012">2012</option>
-			
+			-->
 			</select>
 			
 			<!-- search area -->
@@ -961,7 +991,7 @@ $(function() {
                                                         	<option value='months'>Months</option>
                                                         	<option value='weeks'>Weeks</option>
                                                         	<option value='days' selected>Days</option>
-                                                        	<option value='hours'>Hours</option>
+                                                        	<!--<option value='hours'>Hours</option>-->
                                                         </select>
                                                         </div>
 						</div>
