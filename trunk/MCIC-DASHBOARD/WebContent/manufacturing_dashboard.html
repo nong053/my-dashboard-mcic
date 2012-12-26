@@ -94,10 +94,15 @@ margin-bottom:0;
 #searchGrid{
 	color:white;
 }
+#select_veiw{
+padding-top:3px;
+
+}
 
    
     </style>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="refresh" content="3600"> 
 <link href="css/ui-darkness/jquery-ui-1.8.23.custom.css"  type="text/css" rel="stylesheet">
 <link href="css/manufacturing_dashboard.css" type="text/css" rel="stylesheet" >
 <link href="kendo/styles/kendo.default.min.css" type="text/css" rel="stylesheet" >
@@ -261,18 +266,7 @@ margin-bottom:0;
     				var objDataSource = eval("("+dataSource+")");
     				searchFucntion(objDataSource);
     				
-    				//var dataSource="[{\"Machine\":\"value002\",\"MainJob\":\"value001\",\"PlanQty\":\"value001\",\"ActualQty\":\"value002\",\"StartDate\":\"value001\",\"EndDate\":\"value002\"}]";
-    				//searchFucntion(dataSource);
-    				/*
-    				[
-					{"Machine":"value002","MainJob":"value001","PlanQty":"value001","ActualQty":"value002","StartDate":"value001","EndDate":"value002"}
-					
-					]
-    				*/
-    				//var dataSource="[{'Machine':'value002','MainJob':'value001','PlanQty':'value001','ActualQty':'value002','StartDate':'value001','EndDate':'value002'}]"; 
-    	   			//var objDataSource = eval("("+dataSource+")");
-    	   			
-    	   			//searchFucntion(objDataSource);
+    				
     			}
     			
     		});
@@ -512,8 +506,11 @@ $(function() {
 			dataSource+="[";
 			
 			var j=0;
-			var convertDMY=new Array();
-			var convertDMY2=new Array();
+			var convertStartDMY=new Array();
+			var convertEndDMY=new Array();
+			var convertStartDMY2=new Array();
+			var convertEndDMY2=new Array();
+			
 			$.each(data,function(index1,indexIntry){
 				//alert(i);
 				//alert("cate_job"+indexIntry[0]);
@@ -534,7 +531,7 @@ $(function() {
 						
 						 if(data[0][0]!=null && data[0][1]!=null){
 							 if(i==0){
-									alert("i=="+i);
+									//alert("i=="+i);
 								 	dataSource+="{";
 									}else{
 									dataSource+=",{";	
@@ -555,10 +552,7 @@ $(function() {
 								dataSource+="}]";
 						dataSource+="}";
 						
-						
-						
-						
-						
+
 						 }
 					}	
 				});
@@ -582,12 +576,24 @@ $(function() {
 						//alert(data);
 						var subDateMonthYear="";
 						
+						
 						$.each(data,function(intry2,indexIntry2){
+							/* prev edit*/
 							subDateMonthYear = indexIntry2[3].split("");
-							//convertDMY[intry2]=convertDate(subDateMonthYear[0]+" 00:00:00");
-							convertDMY[intry2]=indexIntry2[3];
-							//console.log(convertDMY[intry2]);
-							//console.log("-----------------"+intry2);
+							//convertStartDMY[intry2]=indexIntry2[3];
+							//convertEndDMY[intry2]=indexIntry2[4];
+							//alert("convertEndDMY[intry2]"+convertEndDMY[intry2]);
+							
+							//edit
+							convertStartDMY[intry2]=convertDate(indexIntry2[3]);
+							convertEndDMY[intry2]=convertDate(indexIntry2[4]);
+							console.log("----------------");
+							console.log("convertStartDMY[intry2]"+convertStartDMY[intry2]);
+							console.log("StartDMY[3]"+indexIntry2[3]);
+						    console.log("convertEndDMY[intry2]"+convertEndDMY[intry2]);
+						    console.log("EndDMY[3]"+indexIntry2[4]);
+						    
+							
 						});
 						console.log("--------End--------");
 						
@@ -599,14 +605,18 @@ $(function() {
 						var dateTo2 =convertDate(indexIntry[4]);
 						//manage check job not unique key
 						
-						var subDateMonthYear2 = indexIntry[3].split(" ");
+						/*prev edit*/
+						 var subDateMonthYear2 = indexIntry[3].split(" ");
 						 //convertDMY2[intry3]=convertDate(subDateMonthYear2[0]+" 00:00:00");
-						 convertDMY2[intry3]=indexIntry[3];
+						 //convertStartDMY2[intry3]=indexIntry[3];
+						 //convertEndDMY2[intry3]=indexIntry[4];
 						
-						//alert("dateFrom"+subDateMonthYear[0]);
 						
-						//alert("convertDMY"+convertDMY+"indexHere"+intry2+"jobCate"+index1);
-						//alert(convertDMY[intry2]);
+						//edit
+						convertStartDMY2[intry3]=convertDate(indexIntry[3]);
+						convertEndDMY2[intry3]=convertDate(indexIntry[4]);
+						//alert("convertStartDMY2="+convertStartDMY2[intry3]);
+						
 						dataSource+="{";
 						
 							dataSource+="name:\"&nbsp;\",";
@@ -639,29 +649,90 @@ $(function() {
 								dataSource+="from:\"/Date("+dateFrom2+")/\",";
 								dataSource+="to:\"/Date("+dateTo2+")/\",";
 								dataSource+="label:\"<div class='detailJob' title='<b>Machine</b> "+indexIntry[0]+"<br><b>Job</b> "+indexIntry[2]+"<br><b>Start</b> "+indexIntry[3]+"<br><b>End</b> "+indexIntry[4]+"<br><b>Status</b> "+indexIntry[7]+"'>"+indexIntry[0]+"</div>\",";
-								//alert(convertDMY.length);
-								//alert(indexIntry[7]);
+								//alert(indexIntry[8]);
+								
+								
 								if(indexIntry[7]=="Unreleased"){
 									dataSource+="customClass:\"ganttOrange\",";
+								
+								}else if(indexIntry[8]>1){
+									dataSource+="customClass:\"ganttRed\",";
 								}else{
 									dataSource+="customClass:\"ganttGreen\",";
 								}
 								
 								var $j=1;
-								for(var i=0; i<convertDMY.length; i++){
-									//console.log(""+convertDMY[i]+"=="+convertDMY2[intry3]);
-									if(convertDMY[i]==convertDMY2[intry3]){
-										//console.log(""+convertDMY[i]+"========"+convertDMY2[intry3]);
+								for(var m=0; m<convertStartDMY.length; m++){
+									
+									
+									
+									if((convertStartDMY[m]==convertStartDMY2[intry3]) && (indexIntry[8] =='0') || (indexIntry[7]=="Unreleased") ){
+										
+										//dataSource+="customClass:\"ganttGreen\",";
 										
 										if($j==2){
-											
+											console.log(""+convertStartDMY[m]+"========"+convertStartDMY2[intry3]);
 											dataSource+="customClass:\"ganttRed\"";
 											break;
 										}
-									$j++;
 									
+									$j++;
 									}
-								}
+									
+									
+									//console.log("exte"+m+"==="+convertStartDMY[i]+"<="+convertEndDMY2[intry3]+"&&"+convertEndDMY[i]+">="+convertStartDMY2[intry3]);
+									//edit start
+									
+									/*
+									12-25-2012 9:23:39 =1356427419
+									15-25-2012 9:23:39 =1364203419
+									13-25-2012 9:23:39 =1359105819
+									18-25-2012 9:23:39 =1372152219
+									 */
+									 /*
+									var aStart=1356427419;
+									var aEnd=1364203419;
+									var bStart=1359105819;
+									var bEnd=1372152219;
+										
+									
+									if((aStart <= bEnd) && (aEnd >= bStart)){
+										
+										
+										console.log(convertStartDMY[m]+"<="+convertEndDMY2[intry3]+"&&"+convertEndDMY[m]+">="+convertStartDMY2[intry3]);
+										console.log("this is  overlap");
+										dataSource+="customClass:\"ganttRed\"";
+										break;
+										
+									}
+									*/
+									
+									
+									
+									/*
+										console.log("Extenal"+convertStartDMY[m]+"<="+convertEndDMY2[intry3]+"&&"+convertEndDMY[m]+">="+convertStartDMY2[intry3]);
+										if((parseInt(convertStartDMY[m])!=parseInt(convertStartDMY2[intry3])) && (parseInt(convertEndDMY[m])!=parseInt(convertEndDMY2[intry3]))){
+											
+											console.log("intenal=>>>>"+convertStartDMY[m]+"<="+convertEndDMY2[intry3]+"&&"+convertEndDMY[m]+">="+convertStartDMY2[intry3]);
+											
+										//alert("ok for equese");
+											if((parseInt(convertStartDMY[m]) <= parseInt(convertEndDMY2[intry3])) && (parseInt(convertEndDMY[m]) >= parseInt(convertStartDMY2[intry3]))){
+												console.log(convertStartDMY[m]+"<="+convertEndDMY2[intry3]+"&&"+convertEndDMY[m]+">="+convertStartDMY2[intry3]);
+												console.log("this is  overlap");
+												dataSource+="customClass:\"ganttRed\"";
+												
+												
+											}
+											
+										}
+										
+									*/
+									
+									
+									//edit end
+									
+								}j=0;
+								
 								console.log("==============================="+intry3);
 								dataSource+="}]";
 						dataSource+="}";
