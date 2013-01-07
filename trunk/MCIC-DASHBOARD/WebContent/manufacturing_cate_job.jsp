@@ -11,12 +11,10 @@ ResultSet rs;
 JSONArray array_obj = new JSONArray();
 
 String query="";
-
-
 query+="select DISTINCT WDR.RESOURCE_CODE, WDR.RESOURCE_DESCRIPTION from WIP_DEPT_RESOURCES_V WDR";
 query+=" WHERE  WDR.RESOURCE_TYPE = 'Machine'";
 query+=" AND RESOURCE_CODE LIKE '%"+param_machine+"%'";
-query+=" AND ROWNUM <15";
+query+=" AND ROWNUM <5";
 
 
 /*AND ROWNUM <5*/
