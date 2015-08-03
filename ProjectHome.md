@@ -1,0 +1,1 @@
+Create Dashboard for line production in manufactory
